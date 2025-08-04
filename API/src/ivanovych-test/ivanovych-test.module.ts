@@ -4,6 +4,7 @@ import { IvanovychTestController } from './ivanovych-test.controller';
 
 @Module({
   controllers: [IvanovychTestController],
+  // providers: [IvanovychTestService],
   providers: [IvanovychTestService],
 })
 export class IvanovychTestModule {}

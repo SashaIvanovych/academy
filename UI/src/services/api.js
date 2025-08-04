@@ -6,3 +6,5 @@ export async function getHelloWorld() {
     throw new Error(error);
   }
 }
+
+//test
