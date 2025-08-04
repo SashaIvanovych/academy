@@ -1,0 +1,42 @@
+@use "defstyle.scss" as *;
+@use "settings.scss" as *;
+
+//@font-face {
+//    font-family: "";
+//    src: url("../fonts/.woff2") format("woff2");
+//    font-weight: normal;
+//   font-style: normal;
+//    font-display: swap;
+//}
+
+body {
+  font-size: rem(16);
+  background-color: #fff;
+  font-family: "Times New Roman", Times, serif;
+  color: #000;
+
+  .lock & {
+    overflow: hidden;
+    touch-action: none;
+    -ms-scroll-chaining: none;
+    overscroll-behavior: none;
+  }
+}
+
+[class*="__container"] {
+  max-width: rem(1470);
+  padding-right: rem(15);
+  padding-left: rem(15);
+  margin: 0 auto;
+}
+
+.App {
+  min-height: 100%;
+  overflow: clip;
+  display: flex;
+  flex-direction: column;
+}
+
+.page {
+  flex: 1 1 auto;
+}
