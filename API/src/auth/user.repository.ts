@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { User } from './user.entity';
 import { ConflictException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 export const createUserRepository = (dataSource: DataSource) => {
   return dataSource.getRepository(User).extend({
@@ -14,7 +15,12 @@ export const createUserRepository = (dataSource: DataSource) => {
         throw new ConflictException('Email already in use');
       }
 
-      const user = this.create({ email, password, refreshToken: null });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = this.create({
+        email,
+        password: hashedPassword,
+        refreshToken: null,
+      });
       return this.save(user);
     },
 

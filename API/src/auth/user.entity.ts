@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Entity('users')
 export class User {
@@ -23,6 +24,6 @@ export class User {
   createdAt: Date;
 
   async validatePassword(password: string): Promise<boolean> {
-    return this.password === password;
+    return bcrypt.compare(password, this.password);
   }
 }
