@@ -4,7 +4,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { User } from './user.entity';
@@ -13,6 +12,9 @@ import { JwtStrategy } from './jwt.strategy';
 import { RefreshJwtStrategy } from './refresh-jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
+const JWT_SECRET_DEFAULT = 'my_secure_jwt_secret_12345';
+const ACCESS_TOKEN_EXPIRES_IN = '1m';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -20,10 +22,8 @@ import { JwtAuthGuard } from './jwt-auth.guard';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret:
-          configService.get<string>('JWT_SECRET') ||
-          'my_secure_jwt_secret_12345',
-        signOptions: { expiresIn: '1m' },
+        secret: configService.get<string>('JWT_SECRET') || JWT_SECRET_DEFAULT,
+        signOptions: { expiresIn: ACCESS_TOKEN_EXPIRES_IN },
       }),
       inject: [ConfigService],
     }),

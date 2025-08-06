@@ -1,16 +1,22 @@
-import { Link } from "react-router-dom";
-import { useEffect } from "react";
-import "./Header.scss";
+import { Link, useNavigate } from "react-router-dom";
+import { useCallback } from "react";
 import { AuthService } from "../../../services/auth";
 import { useLoginContext } from "../../../contexts/LoginContext";
+import "./Header.scss";
 
 function Header() {
   const { isLoggedIn, logout } = useLoginContext();
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    AuthService.logout(localStorage.getItem("user_id"));
-    logout();
-  };
+  const handleLogout = useCallback(async () => {
+    try {
+      await AuthService.logout();
+      logout();
+      navigate("/auth/login");
+    } catch (error) {
+      console.error("Logout failed:", error.message);
+    }
+  }, [logout, navigate]);
 
   return (
     <header className="header">
@@ -20,9 +26,9 @@ function Header() {
         </Link>
         <div className="header__actions">
           {isLoggedIn ? (
-            <Link to="/" className="header__logout" onClick={handleLogout}>
+            <button className="header__logout" onClick={handleLogout}>
               Logout
-            </Link>
+            </button>
           ) : (
             <>
               <Link to="/auth/login" className="header__login">

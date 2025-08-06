@@ -1,80 +1,98 @@
-import { useLocation, Link } from "react-router-dom";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import eye from "../../../assets/icons/eye.svg";
-import eyeSlash from "../../../assets/icons/eyeSlash.svg";
+import { useState, useCallback } from "react";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { AuthService } from "../../../services/auth";
 import { useLoginContext } from "../../../contexts/LoginContext";
+import eye from "../../../assets/icons/eye.svg";
+import eyeSlash from "../../../assets/icons/eyeSlash.svg";
 import "./Auth.scss";
 
-function Auth() {
+function Auth({ isLogin = false }) {
   const { login } = useLoginContext();
-  const { pathname } = useLocation();
-  const isLogin = pathname === "/auth/login";
   const navigate = useNavigate();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [fieldErrors, setFieldErrors] = useState({
-    email: false,
-    password: false,
-    confirmPassword: false,
+  const { pathname } = useLocation();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    general: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError("");
-    setFieldErrors({ email: false, password: false, confirmPassword: false });
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "", general: "" }));
+  }, []);
 
-    let hasError = false;
-    const newFieldErrors = {
-      email: false,
-      password: false,
-      confirmPassword: false,
+  const validateForm = useCallback(() => {
+    const newErrors = {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      general: "",
     };
+    let isValid = true;
 
-    if (!email.includes("@")) {
-      setError("Please enter a valid email address.");
-      newFieldErrors.email = true;
-      hasError = true;
+    if (!formData.email.includes("@")) {
+      newErrors.email = "Please enter a valid email address";
+      isValid = false;
     }
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long.");
-      newFieldErrors.password = true;
-      hasError = true;
+    if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters long";
+      isValid = false;
     }
 
-    if (!isLogin && password !== confirmPassword) {
-      setError("Passwords do not match.");
-      newFieldErrors.confirmPassword = true;
-      hasError = true;
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+      isValid = false;
     }
 
-    if (hasError) {
-      setFieldErrors(newFieldErrors);
-      return;
-    }
+    setErrors(newErrors);
+    return isValid;
+  }, [formData, isLogin]);
 
-    if (isLogin) {
-      AuthService.login(email, password);
-      navigate("/recipes");
-      login();
-    } else {
-      AuthService.register(email, password);
-      navigate("/auth/login");
-    }
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setIsLoading(true);
+      setErrors({ email: "", password: "", confirmPassword: "", general: "" });
 
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
-  };
+      if (!validateForm()) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        if (isLogin) {
+          const { id } = await AuthService.login(
+            formData.email,
+            formData.password
+          );
+          login(id);
+          navigate("/recipes");
+        } else {
+          await AuthService.register(formData.email, formData.password);
+          navigate("/auth/login");
+        }
+        setFormData({ email: "", password: "", confirmPassword: "" });
+      } catch (error) {
+        setErrors((prev) => ({ ...prev, general: error.message }));
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [formData, isLogin, login, navigate]
+  );
 
   return (
-    <div className="page__auth auth">
+    <section className="page__auth auth">
       <div className="auth__container">
         <div className="auth__info">
           <h1 className="auth__title">
@@ -93,15 +111,19 @@ function Auth() {
               Email
             </label>
             <input
-              className={"auth__input" + (fieldErrors.email ? " error" : "")}
+              className={`auth__input${errors.email ? " error" : ""}`}
               type="email"
+              name="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
               placeholder="example@gmail.com"
               required
               autoComplete="username"
             />
+            {errors.email && (
+              <p className="auth__field-error">{errors.email}</p>
+            )}
           </div>
 
           <div className="auth__group">
@@ -109,16 +131,17 @@ function Auth() {
               Password
             </label>
             <input
-              className={"auth__input" + (fieldErrors.password ? " error" : "")}
+              className={`auth__input${errors.password ? " error" : ""}`}
               type={showPassword ? "text" : "password"}
+              name="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="●●●●●●●●"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="●●●●●●"
               required
               autoComplete={isLogin ? "current-password" : "new-password"}
             />
-            {password && (
+            {formData.password && (
               <button
                 type="button"
                 className="auth__toggle-password"
@@ -131,6 +154,9 @@ function Auth() {
                 />
               </button>
             )}
+            {errors.password && (
+              <p className="auth__field-error">{errors.password}</p>
+            )}
           </div>
 
           {!isLogin && (
@@ -139,37 +165,28 @@ function Auth() {
                 Confirm Password
               </label>
               <input
-                className={
-                  "auth__input" + (fieldErrors.confirmPassword ? " error" : "")
-                }
+                className={`auth__input${
+                  errors.confirmPassword ? " error" : ""
+                }`}
                 type={showPassword ? "text" : "password"}
+                name="confirmPassword"
                 id="confirm-password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="●●●●●●●●"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="●●●●●●"
                 required
                 autoComplete="new-password"
               />
-              {password && (
-                <button
-                  type="button"
-                  className="auth__toggle-password"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  <img
-                    src={showPassword ? eye : eyeSlash}
-                    alt={showPassword ? "Hide password" : "Show password"}
-                    title={showPassword ? "Hide password" : "Show password"}
-                  />
-                </button>
+              {errors.confirmPassword && (
+                <p className="auth__field-error">{errors.confirmPassword}</p>
               )}
             </div>
           )}
 
-          {error && <p className="auth__error">{error}</p>}
+          {errors.general && <p className="auth__error">{errors.general}</p>}
 
-          <button type="submit" className="auth__button">
-            {isLogin ? "Log In" : "Register"}
+          <button type="submit" className="auth__button" disabled={isLoading}>
+            {isLoading ? "Loading..." : isLogin ? "Log In" : "Register"}
           </button>
         </form>
 
@@ -180,7 +197,7 @@ function Auth() {
           </Link>
         </p>
       </div>
-    </div>
+    </section>
   );
 }
 

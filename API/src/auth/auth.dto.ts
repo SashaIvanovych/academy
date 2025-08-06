@@ -1,5 +1,8 @@
 import { IsEmail, IsString, MinLength, MaxLength } from 'class-validator';
 
+/**
+ * DTO for user registration.
+ */
 export class RegisterDto {
   @IsEmail({}, { message: 'Invalid email format' })
   email: string;
@@ -10,6 +13,9 @@ export class RegisterDto {
   password: string;
 }
 
+/**
+ * DTO for user login.
+ */
 export class LoginDto {
   @IsEmail({}, { message: 'Invalid email format' })
   email: string;
@@ -20,6 +26,9 @@ export class LoginDto {
   password: string;
 }
 
+/**
+ * DTO for token refresh.
+ */
 export class RefreshTokenDto {
   @IsString({ message: 'Refresh token must be a string' })
   refreshToken: string;

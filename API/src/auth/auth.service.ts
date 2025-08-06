@@ -2,6 +2,9 @@ import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { UserRepositoryType } from './user.repository';
 
+const ACCESS_TOKEN_EXPIRES_IN = '1m';
+const REFRESH_TOKEN_EXPIRES_IN = '30d';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -11,8 +14,7 @@ export class AuthService {
   ) {}
 
   async register(email: string, password: string) {
-    const user = await this.userRepository.register(email, password);
-    return { id: user.id, email: user.email, createdAt: user.createdAt };
+    return this.userRepository.register(email, password);
   }
 
   async login(email: string, password: string) {
@@ -23,10 +25,10 @@ export class AuthService {
 
     const payload = { sub: user.id, email: user.email };
     const accessToken = await this.jwtService.signAsync(payload, {
-      expiresIn: '15m',
+      expiresIn: ACCESS_TOKEN_EXPIRES_IN,
     });
     const refreshToken = await this.jwtService.signAsync(payload, {
-      expiresIn: '30d',
+      expiresIn: REFRESH_TOKEN_EXPIRES_IN,
     });
 
     await this.userRepository.saveRefreshToken(user.id, refreshToken);
@@ -48,10 +50,10 @@ export class AuthService {
 
       const newPayload = { sub: user.id, email: user.email };
       const accessToken = await this.jwtService.signAsync(newPayload, {
-        expiresIn: '1m',
+        expiresIn: ACCESS_TOKEN_EXPIRES_IN,
       });
       const newRefreshToken = await this.jwtService.signAsync(newPayload, {
-        expiresIn: '30d',
+        expiresIn: REFRESH_TOKEN_EXPIRES_IN,
       });
 
       await this.userRepository.saveRefreshToken(user.id, newRefreshToken);

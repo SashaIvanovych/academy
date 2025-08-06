@@ -12,17 +12,17 @@ function App() {
       <LoginProvider>
         <BrowserRouter>
           <Routes>
-            {
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                <Route path="auth/*" element={<Auth />} />
-                <Route path="recipes" element={<Recipes />} />
-              </Route>
-            }
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="auth/login" element={<Auth isLogin />} />
+              <Route path="auth/register" element={<Auth />} />
+              <Route path="recipes" element={<Recipes />} />
+            </Route>
           </Routes>
         </BrowserRouter>
       </LoginProvider>
     </div>
   );
 }
+
 export default App;

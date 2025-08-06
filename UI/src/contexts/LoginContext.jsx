@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 
 const LoginContext = createContext();
 
@@ -6,19 +6,27 @@ export const useLoginContext = () => useContext(LoginContext);
 
 export function LoginProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(
-    !!localStorage.getItem("user_id")
+    !!localStorage.getItem("access_token")
   );
+  const [user, setUser] = useState({
+    id: localStorage.getItem("user_id") || null,
+  });
 
-  const logout = () => {
-    setIsLoggedIn(false);
-  };
-
-  const login = () => {
+  const login = useCallback((userId) => {
     setIsLoggedIn(true);
-  };
+    setUser({ id: userId });
+  }, []);
+
+  const logout = useCallback(() => {
+    setIsLoggedIn(false);
+    setUser({ id: null });
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user_id");
+  }, []);
 
   return (
-    <LoginContext.Provider value={{ isLoggedIn, logout, login }}>
+    <LoginContext.Provider value={{ isLoggedIn, user, login, logout }}>
       {children}
     </LoginContext.Provider>
   );
