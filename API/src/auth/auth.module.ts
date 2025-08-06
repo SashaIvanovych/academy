@@ -23,7 +23,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
         secret:
           configService.get<string>('JWT_SECRET') ||
           'my_secure_jwt_secret_12345',
-        signOptions: { expiresIn: '15m' },
+        signOptions: { expiresIn: '1m' },
       }),
       inject: [ConfigService],
     }),

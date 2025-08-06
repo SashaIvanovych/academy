@@ -31,7 +31,11 @@ export class AuthService {
 
     await this.userRepository.saveRefreshToken(user.id, refreshToken);
 
-    return { access_token: accessToken, refresh_token: refreshToken };
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      id: user.id,
+    };
   }
 
   async refreshToken(refreshToken: string) {
@@ -44,7 +48,7 @@ export class AuthService {
 
       const newPayload = { sub: user.id, email: user.email };
       const accessToken = await this.jwtService.signAsync(newPayload, {
-        expiresIn: '15m',
+        expiresIn: '1m',
       });
       const newRefreshToken = await this.jwtService.signAsync(newPayload, {
         expiresIn: '30d',

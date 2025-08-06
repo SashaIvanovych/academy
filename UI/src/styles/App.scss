@@ -1,5 +1,6 @@
 @use "defstyle.scss" as *;
 @use "settings.scss" as *;
+@import url("https://fonts.googleapis.com/css?family=Montserrat:regular,500,600,700,800,900&display=swap");
 
 //@font-face {
 //    font-family: "";
@@ -11,9 +12,9 @@
 
 body {
   font-size: rem(16);
-  background-color: #fff;
-  font-family: "Times New Roman", Times, serif;
-  color: #000;
+  background-color: #252b42;
+  font-family: "Montserrat", Times, serif;
+  color: #fff;
 
   .lock & {
     overflow: hidden;
