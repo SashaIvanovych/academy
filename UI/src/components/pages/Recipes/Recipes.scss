@@ -1,0 +1,60 @@
+.recipes {
+}
+.recipes__container {
+  padding-bottom: rem(30);
+}
+.recipes__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &:not(:last-child) {
+    margin-bottom: rem(30);
+  }
+}
+.recipes__add-button {
+  font-size: rem(40);
+  background-color: #23a6f0;
+  width: rem(60);
+  height: ren(60);
+  border-radius: rem(20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease 0s;
+  @media (any-hover: hover) {
+    &:hover {
+      background-color: #007ec7;
+    }
+  }
+  @media (max-width: em(767.98)) {
+    font-size: rem(30);
+    width: rem(40);
+    height: ren(40);
+    border-radius: rem(10);
+  }
+}
+.recipes__search {
+  position: relative;
+  input {
+    padding: rem(10) rem(10) rem(10) rem(35);
+    border-radius: rem(10);
+    color: rgb(82, 82, 82);
+    font-size: rem(18);
+    @media (max-width: em(400.98)) {
+      width: rem(230);
+      padding: rem(5) rem(10) rem(5) rem(30);
+    }
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    top: rem(10);
+    left: rem(5);
+    width: rem(22);
+    height: rem(22);
+    background: url("../../../assets/icons/search.svg") no-repeat center;
+    @media (max-width: em(400.98)) {
+      top: rem(5);
+    }
+  }
+}

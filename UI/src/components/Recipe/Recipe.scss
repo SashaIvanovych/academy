@@ -1,0 +1,48 @@
+.recipe {
+  display: grid;
+  row-gap: rem(15);
+  padding: rem(20);
+  border: 1px solid #fff;
+  border-radius: rem(10);
+  transition: all 0.3s ease 0s;
+  @media (any-hover: hover) {
+    &:hover {
+      border: 1px solid #23a6f0;
+      box-shadow: -17px 17px 60px -6px rgba(38, 79, 144, 0.75);
+    }
+  }
+}
+.recipe__image {
+  aspect-ratio: 1/1;
+  transition: transform 0.3s ease 0s;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: rem(10);
+    transition: transform 0.3s ease 0s;
+    @media (any-hover: hover) {
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+.recipe__name {
+  font-size: rem(24);
+  font-weight: 700;
+  line-height: percent(28, 24);
+  @include adaptive-value("font-size", 24, 16);
+}
+.recipe__button {
+  font-size: rem(18);
+  font-weight: 500;
+  transition: all 0.3s ease 0s;
+  @media (any-hover: hover) {
+    &:hover {
+      color: #23a6f0;
+    }
+  }
+}

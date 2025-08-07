@@ -11,8 +11,8 @@ function Home() {
             ✨Explore, add, and edit your favorite recipes — all in one
             beautifully organized space for everyday cooking inspiration.
           </p>
-          <Link to="/auth/login" className="hero__button">
-            Get Started
+          <Link to="/recipes" className="hero__button">
+            Go to recipes
           </Link>
         </div>
         <div className="hero__image">

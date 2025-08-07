@@ -1,0 +1,47 @@
+.recipes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(rem(250), rem(300)));
+  justify-content: center;
+  gap: rem(30);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+
+  button {
+    margin: 0 5px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.2s;
+    color: #333;
+
+    &:hover:not(:disabled) {
+      background-color: #f0f0f0;
+    }
+
+    &.active {
+      font-weight: bold;
+      background-color: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .dots {
+    margin: 0 6px;
+    align-self: center;
+    font-size: 16px;
+    color: #666;
+  }
+}
