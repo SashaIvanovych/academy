@@ -1,21 +1,68 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthService } from "../../../services/auth";
+import { RecipeService } from "../../../services/recipes";
 import { useLoginContext } from "../../../contexts/LoginContext";
 import Recipe from "../../Recipe/Recipe";
 import RecipesContainer from "../../RecipesContainer/RecipesContainer";
 import "./Recipes.scss";
-import { mockRecipes } from "../../../mockRecipes";
 
 function Recipes() {
+  const [recipes, setRecipes] = useState([]);
+  const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [limit] = useState(10);
+  const [offset, setOffset] = useState(0);
   const navigate = useNavigate();
   const { isLoggedIn } = useLoginContext();
-  const [input, setInput] = useState("");
-  const filteredRecipes = mockRecipes.filter((recipe) =>
-    recipe.title.toLocaleLowerCase().includes(input.toLocaleLowerCase())
+  const debounceTimeout = useRef(null);
+
+  const fetchRecipes = useCallback(
+    async (searchValue = search) => {
+      setIsLoading(true);
+      setError("");
+      try {
+        const { recipes, total } = await RecipeService.getRecipes({
+          search: searchValue,
+          limit,
+          offset,
+        });
+        setRecipes(recipes);
+        setTotal(total);
+      } catch (err) {
+        setError(err.message);
+        if (err.message.includes("Session expired")) {
+          navigate("/auth/login");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [limit, offset, navigate]
   );
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchRecipes();
+    } else {
+      navigate("/auth/login");
+    }
+  }, [isLoggedIn, fetchRecipes, navigate]);
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+    debounceTimeout.current = setTimeout(() => {
+      setSearch(value);
+      setOffset(0);
+      fetchRecipes(value);
+    }, 500);
+  };
 
   return (
     <section className="recipes">
@@ -26,13 +73,20 @@ function Recipes() {
             <input
               type="text"
               placeholder="Search recipes..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
+              value={inputValue}
+              onChange={handleSearch}
             />
           </div>
         </div>
-        <RecipesContainer>
-          {filteredRecipes.map((recipe) => (
+        {isLoading && <p>Loading...</p>}
+        {error && <p className="recipes__error">{error}</p>}
+        <RecipesContainer
+          itemsPerPage={limit}
+          totalItems={total}
+          currentOffset={offset}
+          setOffset={setOffset}
+        >
+          {recipes.map((recipe) => (
             <Recipe key={recipe.id} recipe={recipe} />
           ))}
         </RecipesContainer>

@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './auth/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { RecipesModule } from './recipes/recipes.module';
 
 @Module({
   imports: [
@@ -19,11 +20,12 @@ import { ConfigModule } from '@nestjs/config';
       username: 'root',
       password: 'admin',
       database: 'academy',
-      entities: [User],
+      autoLoadEntities: true,
       synchronize: true,
     }),
     IvanovychTestModule,
     AuthModule,
+    RecipesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

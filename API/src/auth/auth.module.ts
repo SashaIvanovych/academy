@@ -13,7 +13,7 @@ import { RefreshJwtStrategy } from './refresh-jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 const JWT_SECRET_DEFAULT = 'my_secure_jwt_secret_12345';
-const ACCESS_TOKEN_EXPIRES_IN = '1m';
+const ACCESS_TOKEN_EXPIRES_IN = '15m';
 
 @Module({
   imports: [

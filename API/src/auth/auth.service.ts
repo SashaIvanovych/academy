@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { UserRepositoryType } from './user.repository';
 
-const ACCESS_TOKEN_EXPIRES_IN = '1m';
+const ACCESS_TOKEN_EXPIRES_IN = '15m';
 const REFRESH_TOKEN_EXPIRES_IN = '30d';
 
 @Injectable()
