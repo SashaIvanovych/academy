@@ -4,6 +4,7 @@ import { RecipeService } from "../../../services/recipes";
 import { useLoginContext } from "../../../contexts/LoginContext";
 import Recipe from "../../Recipe/Recipe";
 import RecipesContainer from "../../RecipesContainer/RecipesContainer";
+import RecipeModal from "../../RecipeModal/RecipeModal";
 import "./Recipes.scss";
 
 function Recipes() {
@@ -15,6 +16,7 @@ function Recipes() {
   const [inputValue, setInputValue] = useState("");
   const [limit] = useState(10);
   const [offset, setOffset] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const { isLoggedIn } = useLoginContext();
   const debounceTimeout = useRef(null);
@@ -51,6 +53,17 @@ function Recipes() {
     }
   }, [isLoggedIn, fetchRecipes, navigate]);
 
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen]);
+
   const handleSearch = (e) => {
     const value = e.target.value;
     setInputValue(value);
@@ -68,7 +81,21 @@ function Recipes() {
     <section className="recipes">
       <div className="recipes__container">
         <div className="recipes__header">
-          {isLoggedIn && <button className="recipes__add-button">+</button>}
+          {isLoggedIn && (
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="recipes__add-button"
+            >
+              +
+            </button>
+          )}
+          {isModalOpen && (
+            <RecipeModal
+              onClose={() => setIsModalOpen(false)}
+              isModalOpen
+              type="add"
+            />
+          )}
           <div className="recipes__search">
             <input
               type="text"

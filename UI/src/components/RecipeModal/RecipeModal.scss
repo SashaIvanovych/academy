@@ -1,0 +1,221 @@
+.recipe-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #252b42;
+  border: 1px solid #23a6f0;
+
+  height: calc(100svh - 90px);
+  width: 720px;
+  border-radius: rem(10);
+  overflow: hidden;
+
+  &::after,
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    display: block;
+    width: 97%;
+    height: rem(10);
+    background-color: #252b42;
+  }
+
+  &::before {
+    top: 0;
+  }
+
+  &::after {
+    bottom: 0;
+  }
+}
+
+.recipe-modal__body {
+  height: 100%;
+  padding: rem(12);
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #2a2a2a;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a2a #252b42;
+}
+
+.recipe-modal__title {
+  font-size: rem(24);
+  font-weight: 700;
+  line-height: percent(28, 24);
+  text-align: center;
+  margin-bottom: rem(20);
+}
+
+.recipe-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: rem(20);
+}
+
+.recipe-modal__field {
+  display: flex;
+  align-items: center;
+  gap: rem(10);
+
+  &--gap {
+    margin-bottom: rem(15);
+  }
+  label {
+    font-size: rem(18);
+    font-weight: 500;
+    line-height: percent(24, 16);
+  }
+
+  input {
+    border-radius: rem(10);
+    padding: rem(5);
+    width: 100%;
+  }
+  select {
+    border-radius: rem(10);
+    width: 100%;
+  }
+}
+
+.recipe-modal__image-input {
+  border: 1px solid #fff;
+  height: rem(300);
+  position: relative;
+  width: 100%;
+  input {
+    display: none;
+  }
+  label {
+    cursor: pointer;
+  }
+  border-radius: rem(10);
+}
+
+.recipe-modal__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: rem(9);
+}
+
+.recipe-modal__upload-icon,
+.recipe-modal__delete-image {
+  position: absolute;
+  left: 50%;
+}
+
+.recipe-modal__upload-icon {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.recipe-modal__delete-image {
+  bottom: 0;
+  transform: translate(-50%, 50%);
+  cursor: pointer;
+  z-index: 5;
+}
+
+.recipe-modal__ingredients {
+  width: 100%;
+  border: 1px solid #fff;
+  padding: rem(5);
+  display: grid;
+  gap: rem(10);
+  border-radius: rem(10);
+}
+
+.recipe-modal__ingredient {
+  display: grid;
+  gap: 5px;
+  grid-template-columns: 0.65fr 0.2fr 0.1fr 0.05fr;
+}
+
+.recipe-modal__close {
+  position: absolute;
+  top: rem(10);
+  right: rem(15);
+  cursor: pointer;
+}
+
+.recipe-modal__button {
+  font-size: rem(18);
+  background-color: #23a6f0;
+  border-radius: rem(10);
+  transition: all 0.3s ease 0s;
+  padding: rem(10);
+  @media (any-hover: hover) {
+    &:hover {
+      background-color: #007ec7;
+    }
+  }
+}
+
+.mde {
+  background-color: #1e1e1e !important;
+  color: #fff !important;
+}
+
+.mde .rc-md-editor {
+  background-color: #1e1e1e !important;
+  border: 1px solid #333 !important;
+}
+
+.mde .rc-md-editor .section {
+  background-color: #1e1e1e !important;
+  color: #fff !important;
+}
+
+.mde .rc-md-editor .section-container {
+  background-color: #1e1e1e !important;
+}
+
+.mde .rc-md-editor .input {
+  background-color: #1e1e1e !important;
+  color: #fff !important;
+}
+
+.mde .rc-md-editor .rc-md-navigation {
+  background-color: #2a2a2a !important;
+  border-bottom: 1px solid #444 !important;
+}
+
+.mde .rc-md-editor .rc-md-navigation button {
+  color: #fff !important;
+}
+
+.mde .rc-md-editor .rc-md-preview {
+  background-color: #1e1e1e !important;
+  color: #ddd !important;
+}
+
+.rc-md-editor .editor-container .sec-md .input {
+  background-color: #1e1e1e !important;
+  color: #fff !important;
+}
+
+.rc-md-navigation.visible {
+  background-color: #2a2a2a !important;
+}
