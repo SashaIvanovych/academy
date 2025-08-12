@@ -1,14 +1,16 @@
 import { useState } from "react";
+import { RecipeService } from "../../services/recipes";
 import "./RecipeModal.scss";
 import UploadIcon from "../../assets/icons/addWhite.svg";
 import DeleteIcon from "../../assets/icons/deleteicon.svg";
 import DeleteSmallIcon from "../../assets/icons/deleteSmall.svg";
 import AddSmallIcon from "../../assets/icons/addSmall.svg";
 import Close from "../../assets/icons/close.svg";
-
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const mdParser = new MarkdownIt();
 
@@ -19,6 +21,10 @@ function RecipeModal({ isModalOpen, onClose, type }) {
   const [ingredients, setIngredients] = useState([
     { name: "", amount: "", unit: "g" },
   ]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  if (!isModalOpen) return null;
 
   const handleIngredientChange = (index, field, value) => {
     const updatedIngredients = [...ingredients];
@@ -30,9 +36,7 @@ function RecipeModal({ isModalOpen, onClose, type }) {
     if (ingredients.length > 1) {
       setIngredients(ingredients.filter((_, i) => i !== index));
     } else {
-      const updated = [...ingredients];
-      updated[0] = { name: "", amount: "", unit: "g" };
-      setIngredients(updated);
+      setIngredients([{ name: "", amount: "", unit: "g" }]);
     }
   };
 
@@ -44,27 +48,54 @@ function RecipeModal({ isModalOpen, onClose, type }) {
     setDescription(text);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    const recipeData = {
-      name,
-      image,
-      description,
-      JSONString: JSON.stringify(ingredients),
-    };
+    try {
+      if (!name.trim()) {
+        throw new Error("Name is required");
+      }
+      if (
+        ingredients.some(
+          (ing) => !ing.name.trim() || !ing.amount || isNaN(ing.amount)
+        )
+      ) {
+        throw new Error("All ingredients must have a valid name and amount");
+      }
 
-    console.log("Recipe data:", recipeData);
+      let imageUrl = "";
+      if (image) {
+        imageUrl = await RecipeService.uploadImage(image);
+      }
 
-    setName("");
-    setImage(null);
-    setDescription("");
-    setIngredients([{ name: "", amount: "", unit: "g" }]);
+      const recipeData = {
+        title: name,
+        image: imageUrl,
+        content: description,
+        ingredients: ingredients.map((ing) => ({
+          name: ing.name,
+          amount: parseFloat(ing.amount),
+          unit: ing.unit,
+        })),
+      };
 
-    onClose(false);
+      await RecipeService.createRecipe(recipeData);
+      toast.success("Recipe added successfully!");
+
+      setName("");
+      setImage(null);
+      setDescription("");
+      setIngredients([{ name: "", amount: "", unit: "g" }]);
+      onClose(false);
+    } catch (err) {
+      setError(err.message);
+      toast.error(`Error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  if (!isModalOpen) return null;
 
   return (
     <div className="recipe-modal">
@@ -80,6 +111,8 @@ function RecipeModal({ isModalOpen, onClose, type }) {
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              placeholder="Enter recipe name"
+              required
             />
           </div>
 
@@ -93,7 +126,7 @@ function RecipeModal({ isModalOpen, onClose, type }) {
                   className="recipe-modal__image"
                 />
               )}
-              {!!image && (
+              {image && (
                 <img
                   src={DeleteIcon}
                   alt="Delete"
@@ -138,14 +171,18 @@ function RecipeModal({ isModalOpen, onClose, type }) {
                     onChange={(e) =>
                       handleIngredientChange(index, "name", e.target.value)
                     }
+                    required
                   />
                   <input
-                    type="text"
+                    type="number"
                     value={ingredient.amount}
                     placeholder="Amount"
                     onChange={(e) =>
                       handleIngredientChange(index, "amount", e.target.value)
                     }
+                    required
+                    min="0"
+                    step="any"
                   />
                   <select
                     value={ingredient.unit}
@@ -177,6 +214,7 @@ function RecipeModal({ isModalOpen, onClose, type }) {
           </div>
 
           <div className="recipe-modal__field">
+            <label>Description:</label>
             <MdEditor
               className="mde"
               style={{
@@ -189,9 +227,13 @@ function RecipeModal({ isModalOpen, onClose, type }) {
               placeholder="Write recipe here..."
             />
           </div>
-
-          <button type="submit" className="recipe-modal__button">
-            {type === "add" ? "Add" : "Edit"}
+          {error && <p className="recipe-modal__error">{error}</p>}
+          <button
+            type="submit"
+            className="recipe-modal__button"
+            disabled={loading}
+          >
+            {loading ? "Saving..." : type === "add" ? "Add" : "Edit"}
           </button>
         </form>
 

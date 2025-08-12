@@ -41,6 +41,7 @@ export const createRecipeRepository = (
         'recipe.authorId',
         'recipe.createdAt',
       ])
+      .orderBy('recipe.createdAt', 'DESC')
       .take(limit)
       .skip(offset);
 

@@ -1,7 +1,26 @@
+input:-webkit-autofill {
+  background-color: #fff !important;
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+  -webkit-text-fill-color: #000 !important;
+}
+
+input:-webkit-autofill:focus {
+  background-color: #fff !important;
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+  -webkit-text-fill-color: #000 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+input:-webkit-autofill:hover {
+  background-color: #fff !important;
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+  -webkit-text-fill-color: #000 !important;
+}
 .recipe-modal {
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 5;
   background-color: #252b42;
   border: 1px solid #23a6f0;
 
@@ -28,11 +47,16 @@
   &::after {
     bottom: 0;
   }
+
+  @media (max-width: em(767.98)) {
+    width: 100%;
+    height: calc(100svh - 70px);
+  }
 }
 
 .recipe-modal__body {
   height: 100%;
-  padding: rem(12);
+  padding: rem(12) 0 rem(12) rem(12);
   overflow-y: scroll;
 
   &::-webkit-scrollbar {
@@ -57,6 +81,10 @@
 
   scrollbar-width: thin;
   scrollbar-color: #2a2a2a #252b42;
+
+  @media (max-width: em(400.98)) {
+    padding: rem(12) 0 rem(12) rem(5);
+  }
 }
 
 .recipe-modal__title {
@@ -77,6 +105,10 @@
   display: flex;
   align-items: center;
   gap: rem(10);
+
+  @media (max-width: em(600.98)) {
+    flex-direction: column;
+  }
 
   &--gap {
     margin-bottom: rem(15);
@@ -151,6 +183,9 @@
   display: grid;
   gap: 5px;
   grid-template-columns: 0.65fr 0.2fr 0.1fr 0.05fr;
+  @media (max-width: em(400.98)) {
+    grid-template-columns: 0.5fr 0.25fr 0.2fr 0.05fr;
+  }
 }
 
 .recipe-modal__close {
@@ -218,4 +253,13 @@
 
 .rc-md-navigation.visible {
   background-color: #2a2a2a !important;
+}
+
+.custom-html-style {
+  background-color: #1e1e1e !important;
+  color: #fff !important;
+}
+
+.recipe-modal__error {
+  color: rgb(241, 4, 4);
 }

@@ -1,6 +1,26 @@
 import api from "./api";
 
 export const RecipeService = {
+  async uploadImage(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "recipe_upload");
+
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/dgblzmxdc/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to upload image to Cloudinary");
+    }
+
+    const data = await response.json();
+    return data.secure_url;
+  },
   async createRecipe(dto) {
     const response = await api.post("/recipes", dto);
     return response.data.data;

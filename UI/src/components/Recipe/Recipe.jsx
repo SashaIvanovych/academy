@@ -1,8 +1,13 @@
+import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import "./Recipe.scss";
 function Recipe({ recipe }) {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate(`/recipes/${recipe.id}`);
+  };
   return (
-    <article className="recipe recipes__recipe">
+    <article onClick={() => handleClick()} className="recipe recipes__recipe">
       <div className="recipe__image">
         <img src={recipe.image} alt="Recipe image" />
       </div>

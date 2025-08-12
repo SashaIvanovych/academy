@@ -107,6 +107,9 @@ function Recipes() {
         </div>
         {isLoading && <p>Loading...</p>}
         {error && <p className="recipes__error">{error}</p>}
+        {!isLoading && recipes.length === 0 && (
+          <p className="recipes__empty">No recipes found.</p>
+        )}
         <RecipesContainer
           itemsPerPage={limit}
           totalItems={total}
