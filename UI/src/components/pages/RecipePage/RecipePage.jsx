@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { RecipeService } from "../../../services/recipes";
 import MarkdownIt from "markdown-it";
 import "./RecipePage.scss";
+import IconEdit from "../../../assets/icons/edit.svg";
+import RecipeModal from "../../RecipeModal/RecipeModal";
 
 const mdParser = new MarkdownIt();
 
@@ -12,31 +14,34 @@ function RecipePage() {
   const [recipe, setRecipe] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleEdit = () => setIsModalOpen(true);
+
+  const fetchRecipe = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const data = await RecipeService.getRecipeById(id);
+      setRecipe(data);
+    } catch (err) {
+      setError(err.message);
+      if (err.message.includes("Session expired")) {
+        navigate("/auth/login");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchRecipe = async () => {
-      setIsLoading(true);
-      setError("");
-      try {
-        const data = await RecipeService.getRecipeById(id);
-        setRecipe(data);
-      } catch (err) {
-        setError(err.message);
-        if (err.message.includes("Session expired")) {
-          navigate("/auth/login");
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (id) {
       fetchRecipe();
     } else {
       setError("Recipe ID is missing");
       setIsLoading(false);
     }
-  }, [id, navigate]);
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -96,6 +101,17 @@ function RecipePage() {
         <p className="recipe-page__created">
           Created: {new Date(recipe.createdAt).toLocaleDateString()}
         </p>
+        {localStorage.getItem("user_id") === recipe.authorId && (
+          <button onClick={handleEdit} className="recipe-page__button-edit">
+            <img src={IconEdit} alt="Edit icon" />
+          </button>
+        )}
+        <RecipeModal
+          isModalOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          data={recipe}
+          onUpdate={fetchRecipe}
+        />
       </div>
     </section>
   );

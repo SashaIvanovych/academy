@@ -1,5 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { RecipeService } from "../../services/recipes";
+import { toast } from "react-toastify";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 import "./RecipeModal.scss";
 import UploadIcon from "../../assets/icons/addWhite.svg";
 import DeleteIcon from "../../assets/icons/deleteicon.svg";
@@ -9,12 +13,11 @@ import Close from "../../assets/icons/close.svg";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const mdParser = new MarkdownIt();
 
-function RecipeModal({ isModalOpen, onClose, type }) {
+function RecipeModal({ isModalOpen, onClose, data, onUpdate }) {
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
   const [description, setDescription] = useState("");
@@ -23,13 +26,32 @@ function RecipeModal({ isModalOpen, onClose, type }) {
   ]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (data) {
+      setName(data.title || "");
+      setDescription(data.content || "");
+      setIngredients(
+        data.ingredients?.length
+          ? data.ingredients
+          : [{ name: "", amount: "", unit: "g" }]
+      );
+      setImage(data.image || null);
+    } else {
+      setName("");
+      setDescription("");
+      setIngredients([{ name: "", amount: "", unit: "g" }]);
+      setImage(null);
+    }
+  }, [data]);
 
   if (!isModalOpen) return null;
 
   const handleIngredientChange = (index, field, value) => {
-    const updatedIngredients = [...ingredients];
-    updatedIngredients[index][field] = value;
-    setIngredients(updatedIngredients);
+    const updated = [...ingredients];
+    updated[index][field] = value;
+    setIngredients(updated);
   };
 
   const removeIngredient = (index) => {
@@ -46,6 +68,11 @@ function RecipeModal({ isModalOpen, onClose, type }) {
 
   const handleEditorChange = ({ text }) => {
     setDescription(text);
+  };
+
+  const handleDeleteImage = () => {
+    setImage(null);
+    //document.getElementById("image").value = "";
   };
 
   const handleSubmit = async (e) => {
@@ -65,9 +92,11 @@ function RecipeModal({ isModalOpen, onClose, type }) {
         throw new Error("All ingredients must have a valid name and amount");
       }
 
-      let imageUrl = "";
-      if (image) {
+      let imageUrl = data?.image || "";
+      if (image && typeof image !== "string") {
         imageUrl = await RecipeService.uploadImage(image);
+      } else if (!image) {
+        imageUrl = "";
       }
 
       const recipeData = {
@@ -81,14 +110,16 @@ function RecipeModal({ isModalOpen, onClose, type }) {
         })),
       };
 
-      await RecipeService.createRecipe(recipeData);
-      toast.success("Recipe added successfully!");
+      if (data) {
+        await RecipeService.updateRecipe(data.id, recipeData);
+        toast.success("Recipe updated successfully!");
+      } else {
+        await RecipeService.createRecipe(recipeData);
+        toast.success("Recipe created successfully!");
+      }
 
-      setName("");
-      setImage(null);
-      setDescription("");
-      setIngredients([{ name: "", amount: "", unit: "g" }]);
       onClose(false);
+      if (onUpdate) onUpdate();
     } catch (err) {
       setError(err.message);
       toast.error(`Error: ${err.message}`);
@@ -97,11 +128,54 @@ function RecipeModal({ isModalOpen, onClose, type }) {
     }
   };
 
+  const handleDelete = () => {
+    if (!data) return;
+
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <div className="custom-confirm">
+            <h1>Are you sure?</h1>
+            <p>
+              You are about to delete <b>{data.title}</b>. This action cannot be
+              undone.
+            </p>
+            <div className="custom-confirm__buttons">
+              <button
+                onClick={onClose}
+                className="custom-confirm__btn custom-confirm__btn--cancel"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await RecipeService.deleteRecipe(data.id);
+                    toast.success("Recipe deleted successfully!");
+                    onClose();
+                    onClose(false);
+                    if (onUpdate) onUpdate();
+                    navigate("/recipes");
+                  } catch (err) {
+                    toast.error(`Error deleting recipe: ${err.message}`);
+                  }
+                }}
+                className="custom-confirm__btn custom-confirm__btn--delete"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        );
+      },
+    });
+  };
+
   return (
     <div className="recipe-modal">
       <div className="recipe-modal__body">
         <h2 className="recipe-modal__title">
-          {type === "add" ? "Add recipe" : "Edit recipe"}
+          {data ? "Edit recipe" : "Add recipe"}
         </h2>
         <form className="recipe-modal__form" onSubmit={handleSubmit}>
           <div className="recipe-modal__field">
@@ -121,41 +195,46 @@ function RecipeModal({ isModalOpen, onClose, type }) {
             <div className="recipe-modal__image-input">
               {image && (
                 <img
-                  src={URL.createObjectURL(image)}
+                  src={
+                    typeof image === "string"
+                      ? image
+                      : URL.createObjectURL(image)
+                  }
                   alt="Recipe"
                   className="recipe-modal__image"
                 />
               )}
+
               {image && (
                 <img
                   src={DeleteIcon}
                   alt="Delete"
                   className="recipe-modal__delete-image"
-                  onClick={() => {
-                    setImage(null);
-                    document.getElementById("image").value = "";
-                  }}
+                  onClick={handleDeleteImage}
                 />
               )}
-              <label htmlFor="image">
-                {!image && (
-                  <img
-                    src={UploadIcon}
-                    alt="Upload"
-                    className="recipe-modal__upload-icon"
+
+              {!image && (
+                <>
+                  <label htmlFor="image">
+                    <img
+                      src={UploadIcon}
+                      alt="Upload"
+                      className="recipe-modal__upload-icon"
+                    />
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="image"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setImage(e.target.files[0]);
+                      }
+                    }}
                   />
-                )}
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                id="image"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    setImage(e.target.files[0]);
-                  }
-                }}
-              />
+                </>
+              )}
             </div>
           </div>
 
@@ -217,24 +296,34 @@ function RecipeModal({ isModalOpen, onClose, type }) {
             <label>Description:</label>
             <MdEditor
               className="mde"
-              style={{
-                height: "300px",
-                width: "100%",
-              }}
+              style={{ height: "300px", width: "100%" }}
               value={description}
               renderHTML={(text) => mdParser.render(text)}
               onChange={handleEditorChange}
               placeholder="Write recipe here..."
             />
           </div>
+
           {error && <p className="recipe-modal__error">{error}</p>}
-          <button
-            type="submit"
-            className="recipe-modal__button"
-            disabled={loading}
-          >
-            {loading ? "Saving..." : type === "add" ? "Add" : "Edit"}
-          </button>
+
+          <div className="recipe-modal__actions">
+            <button
+              type="submit"
+              className="recipe-modal__button"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : data ? "Update" : "Add"}
+            </button>
+            {data && (
+              <button
+                type="button"
+                className="recipe-modal__button recipe-modal__button--delete"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+            )}
+          </div>
         </form>
 
         <button

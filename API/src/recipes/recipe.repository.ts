@@ -9,6 +9,7 @@ export type RecipeRepositoryType = {
     search?: string,
     limit?: number,
     offset?: number,
+    authorId?: string,
   ) => Promise<{ recipes: Recipe[]; total: number }>;
   findById: (id: string) => Promise<Recipe>;
   updateRecipe: (
@@ -29,7 +30,12 @@ export const createRecipeRepository = (
     return repository.save(recipe);
   };
 
-  const findAll = async (search?: string, limit = 10, offset = 0) => {
+  const findAll = async (
+    search?: string,
+    limit = 10,
+    offset = 0,
+    authorId?: string,
+  ) => {
     const query = repository
       .createQueryBuilder('recipe')
       .select([
@@ -46,7 +52,11 @@ export const createRecipeRepository = (
       .skip(offset);
 
     if (search) {
-      query.where('recipe.title ILIKE :search', { search: `%${search}%` });
+      query.andWhere('recipe.title ILIKE :search', { search: `%${search}%` });
+    }
+
+    if (authorId) {
+      query.andWhere('recipe.authorId = :authorId', { authorId });
     }
 
     const [recipes, total] = await query.getManyAndCount();

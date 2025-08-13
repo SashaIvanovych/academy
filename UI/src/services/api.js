@@ -21,18 +21,26 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const status = error.response?.status;
+    const message = error.response?.data?.message;
+
+    // Неправильні дані для входу
+    if (status === 401 && message === "Invalid credentials") {
+      throw new Error("Invalid email or password");
+    }
+
+    // Токен прострочений або відсутній
     if (
-      error.response &&
-      error.response.status === 401 &&
+      status === 401 &&
       !originalRequest._retry &&
+      originalRequest.url !== `${API_BASE_URL}/auth/login` &&
       originalRequest.url !== `${API_BASE_URL}/auth/refresh`
     ) {
       originalRequest._retry = true;
       try {
         const refreshToken = localStorage.getItem("refresh_token");
-        if (!refreshToken) {
-          throw new Error("No refresh token available");
-        }
+        if (!refreshToken) throw new Error("No refresh token available");
+
         const response = await api.post("/auth/refresh", { refreshToken });
         const { access_token, refresh_token } = response.data.data;
         localStorage.setItem("access_token", access_token);
@@ -46,8 +54,9 @@ api.interceptors.response.use(
         throw new Error("Session expired. Please log in again.");
       }
     }
-    throw error.response && error.response.data.message
-      ? new Error(error.response.data.message)
+
+    throw message
+      ? new Error(message)
       : new Error("An unexpected error occurred");
   }
 );

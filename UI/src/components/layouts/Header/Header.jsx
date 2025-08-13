@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCallback } from "react";
 import { AuthService } from "../../../services/auth";
 import { useLoginContext } from "../../../contexts/LoginContext";
+import logoutIcon from "../../../assets/icons/logout.svg";
 import "./Header.scss";
 
 function Header() {
@@ -27,7 +28,7 @@ function Header() {
         <div className="header__actions">
           {isLoggedIn ? (
             <button className="header__logout" onClick={handleLogout}>
-              Logout
+              <img src={logoutIcon} alt="Logout" />
             </button>
           ) : (
             <>

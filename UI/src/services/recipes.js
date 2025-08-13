@@ -26,10 +26,11 @@ export const RecipeService = {
     return response.data.data;
   },
 
-  async getRecipes({ search = "", limit = 10, offset = 0 }) {
-    const response = await api.get("/recipes", {
-      params: { search, limit, offset },
-    });
+  async getRecipes({ search = "", limit = 10, offset = 0, authorId }) {
+    const params = { search, limit, offset };
+    if (authorId) params.authorId = authorId;
+
+    const response = await api.get("/recipes", { params });
     return response.data.data;
   },
 

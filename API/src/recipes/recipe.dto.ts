@@ -70,8 +70,11 @@ export class GetRecipesQueryDto {
 
   @IsOptional()
   @Type(() => Number)
-  @IsNumber()
   offset?: number;
+
+  @IsOptional()
+  @IsString()
+  authorId?: string;
 }
 
 export class GetRecipeByIdParamDto {

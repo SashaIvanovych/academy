@@ -17,9 +17,11 @@ function Recipes() {
   const [limit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
-  const { isLoggedIn } = useLoginContext();
+  const [myRecipesOnly, setMyRecipesOnly] = useState(false);
   const debounceTimeout = useRef(null);
+
+  const navigate = useNavigate();
+  const { isLoggedIn, user } = useLoginContext();
 
   const fetchRecipes = useCallback(
     async (searchValue = search) => {
@@ -30,28 +32,22 @@ function Recipes() {
           search: searchValue,
           limit,
           offset,
+          authorId: isLoggedIn && myRecipesOnly ? user.id : undefined,
         });
         setRecipes(recipes);
         setTotal(total);
       } catch (err) {
         setError(err.message);
-        if (err.message.includes("Session expired")) {
-          navigate("/auth/login");
-        }
       } finally {
         setIsLoading(false);
       }
     },
-    [limit, offset, navigate]
+    [limit, offset, search, myRecipesOnly, isLoggedIn, user]
   );
 
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchRecipes();
-    } else {
-      navigate("/auth/login");
-    }
-  }, [isLoggedIn, fetchRecipes, navigate]);
+    fetchRecipes();
+  }, [fetchRecipes]);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -93,7 +89,7 @@ function Recipes() {
             <RecipeModal
               onClose={() => setIsModalOpen(false)}
               isModalOpen
-              type="add"
+              onUpdate={fetchRecipes}
             />
           )}
           <div className="recipes__search">
@@ -104,7 +100,24 @@ function Recipes() {
               onChange={handleSearch}
             />
           </div>
+          {isLoggedIn && (
+            <div className="recipes__my-recipes">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={myRecipesOnly}
+                  onChange={(e) => {
+                    setMyRecipesOnly(e.target.checked);
+                    setOffset(0);
+                    fetchRecipes(search);
+                  }}
+                />
+                My Recipes
+              </label>
+            </div>
+          )}
         </div>
+
         {isLoading && <p>Loading...</p>}
         {error && <p className="recipes__error">{error}</p>}
         {!isLoading && recipes.length === 0 && (

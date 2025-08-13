@@ -18,8 +18,8 @@ export class RecipeService {
   }
 
   async getRecipes(query: GetRecipesQueryDto) {
-    const { search, limit, offset } = query;
-    return this.recipeRepository.findAll(search, limit, offset);
+    const { search, limit, offset, authorId } = query;
+    return this.recipeRepository.findAll(search, limit, offset, authorId);
   }
 
   async getRecipeById(id: string) {

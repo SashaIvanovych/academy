@@ -1,3 +1,7 @@
+.recipe-page__container {
+  position: relative;
+}
+
 .recipe-page__error {
   text-align: center;
   font-size: rem(26);
@@ -181,6 +185,21 @@
 
     th {
       background-color: #1e2230;
+    }
+  }
+}
+
+.recipe-page__button-edit {
+  position: absolute;
+  top: 0;
+  left: rem(15);
+  background-color: #23a6f0;
+  padding: rem(10);
+  border-radius: rem(10);
+  transition: all 0.3s ease 0s;
+  @media (any-hover: hover) {
+    &:hover {
+      background-color: #007ec7;
     }
   }
 }

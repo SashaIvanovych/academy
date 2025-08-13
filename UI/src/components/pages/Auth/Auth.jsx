@@ -2,9 +2,11 @@ import { useState, useCallback } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { AuthService } from "../../../services/auth";
 import { useLoginContext } from "../../../contexts/LoginContext";
+import { toast } from "react-toastify";
 import eye from "../../../assets/icons/eye.svg";
 import eyeSlash from "../../../assets/icons/eyeSlash.svg";
 import "./Auth.scss";
+import "react-toastify/dist/ReactToastify.css";
 
 function Auth({ isLogin = false }) {
   const { login } = useLoginContext();
@@ -79,16 +81,18 @@ function Auth({ isLogin = false }) {
           navigate("/recipes");
         } else {
           await AuthService.register(formData.email, formData.password);
+          toast.success("Registered successfully! Please log in.");
           navigate("/auth/login");
         }
         setFormData({ email: "", password: "", confirmPassword: "" });
       } catch (error) {
         setErrors((prev) => ({ ...prev, general: error.message }));
+        toast.error(error.message || "Something went wrong");
       } finally {
         setIsLoading(false);
       }
     },
-    [formData, isLogin, login, navigate]
+    [formData, isLogin, login, navigate, validateForm]
   );
 
   return (
