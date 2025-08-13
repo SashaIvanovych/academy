@@ -22,7 +22,7 @@ function Header() {
   return (
     <header className="header">
       <div className="header__container">
-        <Link to="/" className="header__logo">
+        <Link to="/recipes" className="header__logo">
           Recipe Blog
         </Link>
         <div className="header__actions">

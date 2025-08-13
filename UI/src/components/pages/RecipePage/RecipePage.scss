@@ -13,7 +13,7 @@
   text-align: center;
   @include adaptive-value("font-size", 40, 20);
   &:not(:last-child) {
-    @include adaptive-value("margin-bottom", 30, 15);
+    margin-bottom: rem(30);
   }
 }
 
@@ -73,32 +73,35 @@
 }
 
 .recipe-page__content {
+  &:not(:last-child) {
+    margin-bottom: rem(20);
+  }
   line-height: 1.6;
   h1 {
     font-weight: 700;
     margin: 0em 0 0.5em;
-    color: #23a6f0;
+    color: #fff;
     @include adaptive-value("font-size", 32, 18);
   }
 
   h2 {
     font-weight: 600;
     margin: 0.9em 0 0.5em;
-    color: #23a6f0;
+    color: #fff;
     @include adaptive-value("font-size", 28, 18);
   }
 
   h3 {
     font-weight: 600;
     margin: 0.8em 0 0.4em;
-    color: #23a6f0;
+    color: #fff;
     @include adaptive-value("font-size", 24, 18);
   }
 
   h4 {
     font-weight: 500;
     margin: 0.7em 0 0.4em;
-    color: #23a6f0;
+    color: #fff;
     @include adaptive-value("font-size", 20, 16);
   }
 
@@ -106,14 +109,14 @@
     font-size: 1.1rem;
     font-weight: 500;
     margin: 0.6em 0 0.3em;
-    color: #23a6f0;
+    color: #fff;
   }
 
   h6 {
     font-size: 1rem;
     font-weight: 500;
     margin: 0.5em 0 0.3em;
-    color: #23a6f0;
+    color: #fff;
   }
 
   p {
@@ -202,4 +205,9 @@
       background-color: #007ec7;
     }
   }
+}
+
+.recipe-page__created {
+  text-align: right;
+  font-size: rem(18);
 }

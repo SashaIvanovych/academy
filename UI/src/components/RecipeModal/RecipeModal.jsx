@@ -14,6 +14,7 @@ import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
 import "react-toastify/dist/ReactToastify.css";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const mdParser = new MarkdownIt();
 
@@ -312,7 +313,13 @@ function RecipeModal({ isModalOpen, onClose, data, onUpdate }) {
               className="recipe-modal__button"
               disabled={loading}
             >
-              {loading ? "Saving..." : data ? "Update" : "Add"}
+              {loading ? (
+                <ClipLoader color="#fff" size={20} />
+              ) : data ? (
+                "Update"
+              ) : (
+                "Add"
+              )}
             </button>
             {data && (
               <button

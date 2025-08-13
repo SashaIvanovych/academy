@@ -3,6 +3,7 @@ import { useLocation, Link, useNavigate } from "react-router-dom";
 import { AuthService } from "../../../services/auth";
 import { useLoginContext } from "../../../contexts/LoginContext";
 import { toast } from "react-toastify";
+import ClipLoader from "react-spinners/ClipLoader";
 import eye from "../../../assets/icons/eye.svg";
 import eyeSlash from "../../../assets/icons/eyeSlash.svg";
 import "./Auth.scss";
@@ -190,7 +191,13 @@ function Auth({ isLogin = false }) {
           {errors.general && <p className="auth__error">{errors.general}</p>}
 
           <button type="submit" className="auth__button" disabled={isLoading}>
-            {isLoading ? "Loading..." : isLogin ? "Log In" : "Register"}
+            {isLoading ? (
+              <ClipLoader color="#fff" size={20} />
+            ) : isLogin ? (
+              "Log In"
+            ) : (
+              "Register"
+            )}
           </button>
         </form>
 

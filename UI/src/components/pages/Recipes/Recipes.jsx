@@ -5,6 +5,7 @@ import { useLoginContext } from "../../../contexts/LoginContext";
 import Recipe from "../../Recipe/Recipe";
 import RecipesContainer from "../../RecipesContainer/RecipesContainer";
 import RecipeModal from "../../RecipeModal/RecipeModal";
+import ClipLoader from "react-spinners/ClipLoader";
 import "./Recipes.scss";
 
 function Recipes() {
@@ -38,11 +39,14 @@ function Recipes() {
         setTotal(total);
       } catch (err) {
         setError(err.message);
+        if (err.message === "Session expired. Please log in again.") {
+          navigate("/auth/login");
+        }
       } finally {
         setIsLoading(false);
       }
     },
-    [limit, offset, search, myRecipesOnly, isLoggedIn, user]
+    [limit, offset, search, myRecipesOnly, isLoggedIn, user, navigate]
   );
 
   useEffect(() => {
@@ -50,7 +54,7 @@ function Recipes() {
   }, [fetchRecipes]);
 
   useEffect(() => {
-    if (isModalOpen) {
+    if (isModalOpen || isLoading) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -58,9 +62,10 @@ function Recipes() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isModalOpen]);
+  }, [isModalOpen, isLoading]);
 
   const handleSearch = (e) => {
+    if (isLoading) return;
     const value = e.target.value;
     setInputValue(value);
     if (debounceTimeout.current) {
@@ -81,6 +86,7 @@ function Recipes() {
             <button
               onClick={() => setIsModalOpen(true)}
               className="recipes__add-button"
+              disabled={isLoading}
             >
               +
             </button>
@@ -92,17 +98,9 @@ function Recipes() {
               onUpdate={fetchRecipes}
             />
           )}
-          <div className="recipes__search">
-            <input
-              type="text"
-              placeholder="Search recipes..."
-              value={inputValue}
-              onChange={handleSearch}
-            />
-          </div>
-          {isLoggedIn && (
-            <div className="recipes__my-recipes">
-              <label>
+          <div className="recipes__filter">
+            {isLoggedIn && (
+              <label className="custom-checkbox">
                 <input
                   type="checkbox"
                   checked={myRecipesOnly}
@@ -111,14 +109,30 @@ function Recipes() {
                     setOffset(0);
                     fetchRecipes(search);
                   }}
+                  disabled={isLoading}
                 />
+                <span></span>
                 My Recipes
               </label>
+            )}
+            <div className="recipes__search">
+              <input
+                type="text"
+                placeholder="Search recipes..."
+                value={inputValue}
+                onChange={handleSearch}
+              />
             </div>
-          )}
+          </div>
         </div>
 
-        {isLoading && <p>Loading...</p>}
+        {isLoading && (
+          <div className="recipes__overlay">
+            <div className="recipes__spinner">
+              <ClipLoader color="#fff" size={60} />
+            </div>
+          </div>
+        )}
         {error && <p className="recipes__error">{error}</p>}
         {!isLoading && recipes.length === 0 && (
           <p className="recipes__empty">No recipes found.</p>

@@ -38,7 +38,7 @@ input:-webkit-autofill:hover {
     width: 100%;
     height: rem(10);
     background-color: #252b42;
-    z-index: 5;
+    z-index: 10;
   }
 
   &::before {
@@ -50,8 +50,9 @@ input:-webkit-autofill:hover {
   }
 
   @media (max-width: em(767.98)) {
-    width: 100%;
-    height: calc(100svh - 70px);
+    position: fixed;
+    width: 100vw;
+    height: 100svh;
   }
 }
 
@@ -106,10 +107,7 @@ input:-webkit-autofill:hover {
   display: flex;
   align-items: center;
   gap: rem(10);
-
-  @media (max-width: em(600.98)) {
-    flex-direction: column;
-  }
+  flex-direction: column;
 
   &--gap {
     margin-bottom: rem(15);
@@ -225,6 +223,12 @@ input:-webkit-autofill:hover {
 .mde {
   background-color: #1e1e1e !important;
   color: #fff !important;
+  th {
+    background-color: #1e1e1e !important;
+  }
+  blockquote {
+    color: #fff !important;
+  }
 }
 
 .mde .rc-md-editor {

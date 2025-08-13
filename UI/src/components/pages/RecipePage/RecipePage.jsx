@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { RecipeService } from "../../../services/recipes";
 import MarkdownIt from "markdown-it";
+import ClipLoader from "react-spinners/ClipLoader";
 import "./RecipePage.scss";
 import IconEdit from "../../../assets/icons/edit.svg";
 import RecipeModal from "../../RecipeModal/RecipeModal";
@@ -45,11 +46,11 @@ function RecipePage() {
 
   if (isLoading) {
     return (
-      <section className="recipe-page">
-        <div className="recipe-page__container">
-          <p>Loading...</p>
+      <div className="recipes__overlay">
+        <div className="recipes__spinner">
+          <ClipLoader color="#fff" size={60} />
         </div>
-      </section>
+      </div>
     );
   }
 
