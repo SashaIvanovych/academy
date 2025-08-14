@@ -11,6 +11,14 @@
   font-weight: 700;
   line-height: percent(50, 40);
   text-align: center;
+  transform: translateY(-100%);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+
+  &.--animate {
+    transform: translateY(0);
+    opacity: 1;
+  }
   @include adaptive-value("font-size", 40, 20);
   &:not(:last-child) {
     margin-bottom: rem(30);
@@ -22,6 +30,14 @@
   aspect-ratio: 3/1;
   border-radius: rem(20);
   overflow: hidden;
+  transform: scale(0);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+
+  &.--animate {
+    transform: scale(1);
+    opacity: 1;
+  }
   &:not(:last-child) {
     @include adaptive-value("margin-bottom", 30, 15);
   }
@@ -43,6 +59,14 @@
   font-size: rem(26);
   font-weight: 500;
   line-height: percent(30, 26);
+  transform: translatex(-80%);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+
+  .--animate & {
+    transform: translateX(0);
+    opacity: 1;
+  }
   @include adaptive-value("font-size", 26, 20);
   &:not(:last-child) {
     margin-bottom: rem(10);
@@ -55,6 +79,21 @@
 }
 
 .recipe-page__ingredients-item {
+  opacity: 0;
+  transform: translate(-90%, 0%);
+  transition: opacity 0.6s, transform 0.6s;
+
+  .--animate & {
+    opacity: 1;
+    transform: translate(0, 0);
+
+    @for $i from 1 through 6 {
+      &:nth-child(#{$i}) {
+        $delay: $i * 0.2;
+        transition: #{$delay}s;
+      }
+    }
+  }
   font-size: rem(20);
   font-weight: 500;
   line-height: percent(24, 20);
@@ -73,6 +112,14 @@
 }
 
 .recipe-page__content {
+  transform: translatex(-80%);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+
+  &.--animate {
+    transform: translateX(0);
+    opacity: 1;
+  }
   &:not(:last-child) {
     margin-bottom: rem(20);
   }

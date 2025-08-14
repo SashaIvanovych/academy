@@ -7,6 +7,7 @@ import RecipesContainer from "../../RecipesContainer/RecipesContainer";
 import RecipeModal from "../../RecipeModal/RecipeModal";
 import ClipLoader from "react-spinners/ClipLoader";
 import "./Recipes.scss";
+import { useInView } from "../../../hooks/useInView";
 
 function Recipes() {
   const [recipes, setRecipes] = useState([]);
@@ -23,6 +24,10 @@ function Recipes() {
 
   const navigate = useNavigate();
   const { isLoggedIn, user } = useLoginContext();
+  const ref = useRef(null);
+  const ref2 = useRef(null);
+  useInView(ref, { threshold: 0.1 });
+  useInView(ref2, { threshold: 0.1 });
 
   const fetchRecipes = useCallback(
     async (searchValue = search) => {
@@ -87,6 +92,7 @@ function Recipes() {
               onClick={() => setIsModalOpen(true)}
               className="recipes__add-button"
               disabled={isLoading}
+              ref={ref}
             >
               +
             </button>
@@ -98,7 +104,7 @@ function Recipes() {
               onUpdate={fetchRecipes}
             />
           )}
-          <div className="recipes__filter">
+          <div className="recipes__filter" ref={ref2}>
             {isLoggedIn && (
               <label className="custom-checkbox">
                 <input

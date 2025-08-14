@@ -5,6 +5,14 @@
   border: 1px solid #fff;
   border-radius: rem(10);
   transition: all 0.3s ease 0s;
+  transform: translateX(-80%);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+
+  &.--animate {
+    transform: translateX(0);
+    opacity: 1;
+  }
   @media (any-hover: hover) {
     &:hover {
       border: 1px solid #23a6f0;

@@ -20,6 +20,7 @@ function App() {
               <Route path="auth/register" element={<Auth />} />
               <Route path="recipes" element={<Recipes />} />
               <Route path="recipes/:id" element={<RecipePage />} />
+              <Route path="*" element={<Recipes />} />
             </Route>
           </Routes>
         </BrowserRouter>

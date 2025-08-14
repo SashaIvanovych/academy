@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { AuthService } from "../../../services/auth";
 import { useLoginContext } from "../../../contexts/LoginContext";
@@ -8,6 +8,7 @@ import eye from "../../../assets/icons/eye.svg";
 import eyeSlash from "../../../assets/icons/eyeSlash.svg";
 import "./Auth.scss";
 import "react-toastify/dist/ReactToastify.css";
+import { useInView } from "../../../hooks/useInView";
 
 function Auth({ isLogin = false }) {
   const { login } = useLoginContext();
@@ -26,6 +27,8 @@ function Auth({ isLogin = false }) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const ref = useRef(null);
+  useInView(ref, { threshold: 0.1 });
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -97,7 +100,7 @@ function Auth({ isLogin = false }) {
   );
 
   return (
-    <section className="page__auth auth">
+    <section className="page__auth auth" ref={ref}>
       <div className="auth__container">
         <div className="auth__info">
           <h1 className="auth__title">

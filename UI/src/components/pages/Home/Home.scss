@@ -15,7 +15,16 @@
 }
 .hero__info {
   flex: 0 1 50%;
+  transform: translatex(-70%);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
 }
+
+.hero__info.--animate {
+  transform: translateX(0);
+  opacity: 1;
+}
+
 .hero__title {
   font-weight: 700;
   line-height: percent(68, 40);
@@ -74,5 +83,14 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  transform: translatex(80%);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+
+  &.--animate {
+    transform: translateX(0);
+    opacity: 1;
   }
 }

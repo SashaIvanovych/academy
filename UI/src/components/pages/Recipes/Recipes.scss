@@ -20,6 +20,14 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease 0s;
+  transform: translatex(-90%);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+
+  &.--animate {
+    transform: translateX(0);
+    opacity: 1;
+  }
   @media (any-hover: hover) {
     &:hover {
       background-color: #007ec7;
@@ -34,6 +42,7 @@
 }
 .recipes__search {
   position: relative;
+
   input {
     padding: rem(10) rem(10) rem(10) rem(35);
     border-radius: rem(10);
@@ -68,6 +77,14 @@
   display: flex;
   gap: rem(10);
   align-items: center;
+  transform: translatex(80%);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+
+  &.--animate {
+    transform: translateX(0);
+    opacity: 1;
+  }
   @media (max-width: em(500.98)) {
     flex-direction: column-reverse;
   }

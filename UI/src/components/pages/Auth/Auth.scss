@@ -1,6 +1,14 @@
 .auth {
   height: calc(100svh - 90px);
   display: flex;
+  transform: scale(80%);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+
+  &.--animate {
+    transform: translateY(0);
+    opacity: 1;
+  }
   &__container {
     display: flex;
     align-items: center;

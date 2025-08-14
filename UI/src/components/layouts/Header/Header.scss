@@ -11,12 +11,28 @@
   text-align: center;
   font-weight: 700;
   line-height: percent(32, 24);
+  transform: translatex(-100%);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+
+  &.--animate {
+    transform: translateX(0);
+    opacity: 1;
+  }
   @include adaptive-value("font-size", 24, 14);
 }
 
 .header__actions {
   display: flex;
   align-items: center;
+  transform: translatex(80%);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+
+  &.--animate {
+    transform: translateX(0);
+    opacity: 1;
+  }
   @include adaptive-value("gap", 20, 5);
 }
 

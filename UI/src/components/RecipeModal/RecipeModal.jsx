@@ -27,7 +27,20 @@ function RecipeModal({ isModalOpen, onClose, data, onUpdate }) {
   ]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setIsVisible(true);
+      setTimeout(() => setIsOpen(true), 10);
+    } else {
+      setIsOpen(false);
+      const timer = setTimeout(() => setIsVisible(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isModalOpen]);
 
   useEffect(() => {
     if (data) {
@@ -47,7 +60,13 @@ function RecipeModal({ isModalOpen, onClose, data, onUpdate }) {
     }
   }, [data]);
 
-  if (!isModalOpen) return null;
+  const handleClose = () => {
+    setIsOpen(false);
+    setTimeout(() => {
+      setIsVisible(false);
+      onClose(false);
+    }, 500);
+  };
 
   const handleIngredientChange = (index, field, value) => {
     const updated = [...ingredients];
@@ -73,7 +92,6 @@ function RecipeModal({ isModalOpen, onClose, data, onUpdate }) {
 
   const handleDeleteImage = () => {
     setImage(null);
-    //document.getElementById("image").value = "";
   };
 
   const handleSubmit = async (e) => {
@@ -119,8 +137,12 @@ function RecipeModal({ isModalOpen, onClose, data, onUpdate }) {
         toast.success("Recipe created successfully!");
       }
 
-      onClose(false);
-      if (onUpdate) onUpdate();
+      setIsOpen(false);
+      setTimeout(() => {
+        setIsVisible(false);
+        onClose(false);
+        if (onUpdate) onUpdate();
+      }, 500);
     } catch (err) {
       setError(err.message);
       toast.error(`Error: ${err.message}`);
@@ -133,7 +155,7 @@ function RecipeModal({ isModalOpen, onClose, data, onUpdate }) {
     if (!data) return;
 
     confirmAlert({
-      customUI: ({ onClose }) => {
+      customUI: ({ onClose: confirmOnClose }) => {
         return (
           <div className="custom-confirm">
             <h1>Are you sure?</h1>
@@ -143,7 +165,7 @@ function RecipeModal({ isModalOpen, onClose, data, onUpdate }) {
             </p>
             <div className="custom-confirm__buttons">
               <button
-                onClick={onClose}
+                onClick={confirmOnClose}
                 className="custom-confirm__btn custom-confirm__btn--cancel"
               >
                 Cancel
@@ -153,10 +175,14 @@ function RecipeModal({ isModalOpen, onClose, data, onUpdate }) {
                   try {
                     await RecipeService.deleteRecipe(data.id);
                     toast.success("Recipe deleted successfully!");
-                    onClose();
-                    onClose(false);
-                    if (onUpdate) onUpdate();
-                    navigate("/recipes");
+                    confirmOnClose();
+                    setIsOpen(false);
+                    setTimeout(() => {
+                      setIsVisible(false);
+                      onClose(false);
+                      if (onUpdate) onUpdate();
+                      navigate("/recipes");
+                    }, 500);
                   } catch (err) {
                     toast.error(`Error deleting recipe: ${err.message}`);
                   }
@@ -172,8 +198,10 @@ function RecipeModal({ isModalOpen, onClose, data, onUpdate }) {
     });
   };
 
+  if (!isVisible) return null;
+
   return (
-    <div className="recipe-modal">
+    <div className={`recipe-modal ${isOpen ? "open" : ""}`}>
       <div className="recipe-modal__body">
         <h2 className="recipe-modal__title">
           {data ? "Edit recipe" : "Add recipe"}
@@ -336,7 +364,7 @@ function RecipeModal({ isModalOpen, onClose, data, onUpdate }) {
         <button
           type="button"
           className="recipe-modal__close"
-          onClick={() => onClose(false)}
+          onClick={handleClose}
         >
           <img src={Close} alt="Close" />
         </button>

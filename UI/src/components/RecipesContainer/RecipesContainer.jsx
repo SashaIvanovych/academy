@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useInView } from "../../hooks/useInView";
 import "./RecipesContainer.scss";
 
 function RecipesContainer({
@@ -8,6 +9,8 @@ function RecipesContainer({
   currentOffset = 0,
   setOffset,
 }) {
+  const ref = useRef(null);
+  useInView(ref, { threshold: 0.1 });
   const [currentPage, setCurrentPage] = useState(
     Math.floor(currentOffset / itemsPerPage) + 1
   );
@@ -63,7 +66,7 @@ function RecipesContainer({
       </div>
 
       {totalPages > 1 && (
-        <div className="pagination">
+        <div className="pagination" ref={ref}>
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}

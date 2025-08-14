@@ -16,6 +16,24 @@ input:-webkit-autofill:hover {
   -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
   -webkit-text-fill-color: #000 !important;
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 4;
+
+  &.open {
+    background-color: rgba(0, 0, 0, 0.7);
+    opacity: 1;
+  }
+}
+
 .recipe-modal {
   position: absolute;
   top: 0;
@@ -23,11 +41,20 @@ input:-webkit-autofill:hover {
   z-index: 5;
   background-color: #252b42;
   border: 1px solid #23a6f0;
-
+  padding-right: rem(5);
   height: calc(100svh - 90px);
   width: 720px;
   border-radius: rem(10);
   overflow: hidden;
+
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+
+  &.open {
+    opacity: 1;
+    transform: translateX(0);
+  }
 
   &::after,
   &::before {
@@ -193,6 +220,7 @@ input:-webkit-autofill:hover {
   right: rem(15);
   cursor: pointer;
 }
+
 .recipe-modal__actions {
   display: flex;
   gap: rem(10);

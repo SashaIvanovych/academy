@@ -1,13 +1,18 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { AuthService } from "../../../services/auth";
 import { useLoginContext } from "../../../contexts/LoginContext";
 import logoutIcon from "../../../assets/icons/logout.svg";
+import { useInView } from "../../../hooks/useInView";
 import "./Header.scss";
 
 function Header() {
   const { isLoggedIn, logout } = useLoginContext();
   const navigate = useNavigate();
+  const ref = useRef(null);
+  const ref2 = useRef(null);
+  useInView(ref, { threshold: 0.1 });
+  useInView(ref2, { threshold: 0.1 });
 
   const handleLogout = useCallback(async () => {
     try {
@@ -22,10 +27,10 @@ function Header() {
   return (
     <header className="header">
       <div className="header__container">
-        <Link to="/recipes" className="header__logo">
+        <Link to="/recipes" className="header__logo" ref={ref}>
           Recipe Blog
         </Link>
-        <div className="header__actions">
+        <div className="header__actions" ref={ref2}>
           {isLoggedIn ? (
             <button className="header__logout" onClick={handleLogout}>
               <img src={logoutIcon} alt="Logout" />
